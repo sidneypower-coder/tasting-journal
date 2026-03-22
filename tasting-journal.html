@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>品味日誌</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Noto+Serif+TC:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --amber-50: #FAEEDA;
+    --amber-100: #FAC775;
+    --amber-200: #EF9F27;
+    --amber-400: #BA7517;
+    --amber-600: #854F0B;
+    --amber-800: #633806;
+    --teal-50: #E1F5EE;
+    --teal-100: #9FE1CB;
+    --teal-200: #5DCAA5;
+    --teal-400: #1D9E75;
+    --teal-600: #0F6E56;
+    --coral-50: #FAECE7;
+    --coral-100: #F5C4B3;
+    --coral-200: #F0997B;
+    --coral-400: #D85A30;
+    --coral-600: #993C1D;
+    --gray-50: #F1EFE8;
+    --gray-100: #D3D1C7;
+    --gray-200: #B4B2A9;
+    --gray-400: #888780;
+    --gray-600: #5F5E5A;
+    --gray-800: #444441;
+    --purple-50: #EEEDFE;
+    --purple-200: #AFA9EC;
+    --purple-600: #534AB7;
+    --purple-800: #3C3489;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #faf8f4;
+    color: #2c2a24;
+    min-height: 100vh;
+  }
+
+  .app-header {
+    background: #2c2a24;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .app-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: #faf8f4;
+    letter-spacing: 0.02em;
+  }
+
+  .app-subtitle {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-top: 2px;
+  }
+
+  .sync-status {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--gray-200);
+  }
+
+  .sync-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--teal-200);
+  }
+
+  .sync-dot.error { background: var(--coral-200); }
+
+  .nav-tabs {
+    display: flex;
+    background: #fff;
+    border-bottom: 1px solid #e8e4dc;
+    overflow-x: auto;
+  }
+
+  .nav-tab {
+    padding: 0.75rem 1.25rem;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.15s;
+    user-select: none;
+    flex-shrink: 0;
+  }
+
+  .nav-tab:hover { color: var(--amber-600); }
+  .nav-tab.active {
+    color: var(--amber-600);
+    border-bottom-color: var(--amber-200);
+  }
+
+  .container { padding: 1.25rem 1rem; max-width: 720px; margin: 0 auto; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Form */
+  .form-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e8e4dc;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+  }
+
+  .type-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 0.5rem;
+  }
+
+  .type-btn {
+    padding: 0.6rem 0.5rem;
+    border: 1px solid #e8e4dc;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    color: var(--gray-600);
+  }
+
+  .type-btn:hover { border-color: var(--amber-200); color: var(--amber-600); }
+  .type-btn.selected {
+    background: var(--amber-50);
+    border-color: var(--amber-200);
+    color: var(--amber-600);
+  }
+
+  .type-icon { font-size: 18px; display: block; margin-bottom: 3px; }
+
+  .form-row { margin-bottom: 1rem; }
+  .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-600);
+    margin-bottom: 5px;
+  }
+
+  input[type=text], input[type=date], textarea, select {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #e8e4dc;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: #2c2a24;
+    background: #faf8f4;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+
+  input[type=text]:focus, input[type=date]:focus, textarea:focus, select:focus {
+    border-color: var(--amber-200);
+    background: #fff;
+  }
+
+  textarea { resize: vertical; min-height: 80px; }
+
+  .flavor-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 6px;
+  }
+
+  .flavor-tag {
+    padding: 4px 12px;
+    border: 1px solid #e8e4dc;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--gray-600);
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .flavor-tag:hover { border-color: var(--amber-100); }
+  .flavor-tag.selected {
+    background: var(--amber-50);
+    border-color: var(--amber-200);
+    color: var(--amber-800);
+  }
+
+  /* Rating stars */
+  .star-row { display: flex; gap: 6px; margin-top: 4px; }
+  .star {
+    font-size: 22px;
+    cursor: pointer;
+    color: #e8e4dc;
+    transition: color 0.1s;
+    user-select: none;
+  }
+  .star.filled { color: var(--amber-200); }
+
+  /* Photo upload */
+  .photo-upload {
+    border: 1.5px dashed #e8e4dc;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .photo-upload:hover { border-color: var(--amber-200); }
+  .photo-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .photo-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .photo-thumb {
+    width: 64px; height: 64px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid #e8e4dc;
+  }
+
+  /* Submit button */
+  .btn-submit {
+    width: 100%;
+    padding: 0.8rem;
+    background: #2c2a24;
+    color: #faf8f4;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .btn-submit:hover { opacity: 0.85; }
+  .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #2c2a24;
+    color: #faf8f4;
+    padding: 0.65rem 1.25rem;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: transform 0.3s ease;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Record list */
+  .record-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e8e4dc;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .record-card:hover { border-color: var(--amber-100); }
+
+  .record-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+
+  .record-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #2c2a24;
+  }
+
+  .record-type-badge {
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .badge-coffee { background: var(--amber-50); color: var(--amber-800); }
+  .badge-wine { background: var(--coral-50); color: var(--coral-600); }
+  .badge-whisky { background: var(--purple-50); color: var(--purple-800); }
+  .badge-cocktail { background: var(--teal-50); color: var(--teal-600); }
+
+  .record-meta {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-bottom: 6px;
+  }
+
+  .record-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .record-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    background: var(--gray-50);
+    border-radius: 20px;
+    color: var(--gray-600);
+  }
+
+  .record-stars { font-size: 13px; color: var(--amber-200); letter-spacing: 1px; }
+
+  /* Filter bar */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .filter-chip {
+    padding: 5px 14px;
+    border: 1px solid #e8e4dc;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    color: var(--gray-600);
+    background: #fff;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .filter-chip.active {
+    background: #2c2a24;
+    color: #faf8f4;
+    border-color: #2c2a24;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--gray-400);
+  }
+  .empty-icon { font-size: 36px; margin-bottom: 0.75rem; }
+  .empty-text { font-size: 14px; }
+
+  /* Settings */
+  .settings-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e8e4dc;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .settings-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2c2a24;
+    margin-bottom: 4px;
+  }
+  .settings-desc {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  .btn-secondary {
+    padding: 0.55rem 1rem;
+    border: 1px solid #e8e4dc;
+    border-radius: 8px;
+    background: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    color: #2c2a24;
+    transition: all 0.15s;
+  }
+  .btn-secondary:hover { background: var(--gray-50); }
+
+  .step {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 0.75rem;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: #2c2a24;
+    color: #faf8f4;
+    font-size: 11px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-text { font-size: 13px; color: var(--gray-600); line-height: 1.6; }
+  .step-text code {
+    background: var(--gray-50);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #2c2a24;
+    font-family: monospace;
+  }
+
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(44, 42, 36, 0.5);
+    z-index: 100;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 16px 16px 0 0;
+    width: 100%;
+    max-width: 720px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+  .modal-close {
+    float: right;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--gray-400);
+    line-height: 1;
+    margin-top: -4px;
+  }
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    padding-right: 2rem;
+  }
+  .modal-photo { width: 100%; border-radius: 8px; margin-bottom: 1rem; object-fit: cover; max-height: 200px; }
+  .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0ece4; font-size: 13px; }
+  .detail-label { color: var(--gray-400); }
+  .detail-value { color: #2c2a24; font-weight: 500; text-align: right; max-width: 60%; }
+  .modal-note { font-size: 13px; color: var(--gray-600); line-height: 1.7; margin-top: 1rem; font-style: italic; }
+
+  @media (max-width: 480px) {
+    .form-row-2 { grid-template-columns: 1fr; }
+    .type-selector { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div>
+    <div class="app-title">品味日誌</div>
+    <div class="app-subtitle">Coffee &amp; Spirits Journal</div>
+  </div>
+  <div class="sync-status" id="syncStatus">
+    <div class="sync-dot" id="syncDot"></div>
+    <span id="syncText">本地儲存</span>
+  </div>
+</div>
+
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="switchSection('add')">新增紀錄</div>
+  <div class="nav-tab" onclick="switchSection('list')">所有紀錄</div>
+  <div class="nav-tab" onclick="switchSection('settings')">設定 / Sheets</div>
+</div>
+
+<div class="container">
+
+  <!-- ADD SECTION -->
+  <div class="section active" id="section-add">
+
+    <div class="form-card">
+      <div class="form-card-title">類型</div>
+      <div class="type-selector">
+        <div class="type-btn selected" onclick="selectType(this,'手沖咖啡')"><span class="type-icon">☕</span>手沖咖啡</div>
+        <div class="type-btn" onclick="selectType(this,'義式咖啡')"><span class="type-icon">🍵</span>義式咖啡</div>
+        <div class="type-btn" onclick="selectType(this,'葡萄酒')"><span class="type-icon">🍷</span>葡萄酒</div>
+        <div class="type-btn" onclick="selectType(this,'威士忌')"><span class="type-icon">🥃</span>威士忌</div>
+        <div class="type-btn" onclick="selectType(this,'烈酒')"><span class="type-icon">🍶</span>烈酒</div>
+        <div class="type-btn" onclick="selectType(this,'調酒')"><span class="type-icon">🍸</span>調酒</div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-card-title">基本資訊</div>
+      <div class="form-row">
+        <label>名稱 / 品項</label>
+        <input type="text" id="f-name" placeholder="例：Ethiopia Yirgacheffe / Hibiki 21">
+      </div>
+      <div class="form-row-2">
+        <div>
+          <label>品種 / 產區</label>
+          <input type="text" id="f-variety" placeholder="例：Heirloom / 斯貝賽">
+        </div>
+        <div>
+          <label>日期</label>
+          <input type="date" id="f-date">
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div>
+          <label>地點</label>
+          <input type="text" id="f-location" placeholder="例：Fika Fika 信義店">
+        </div>
+        <div>
+          <label>場合</label>
+          <select id="f-occasion">
+            <option value="">選擇場合</option>
+            <option>自己喝</option>
+            <option>和朋友</option>
+            <option>和另一半</option>
+            <option>工作場合</option>
+            <option>旅行途中</option>
+            <option>特殊慶祝</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card" id="flavor-section">
+      <div class="form-card-title">風味描述</div>
+      <div id="flavor-tags" class="flavor-tags"></div>
+      <div class="form-row" style="margin-top:0.75rem; margin-bottom:0">
+        <label>自由輸入風味</label>
+        <input type="text" id="f-flavor-custom" placeholder="例：黑糖、太妃糖、柑橘">
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-card-title">評分與筆記</div>
+      <div class="form-row">
+        <label>整體評分</label>
+        <div class="star-row" id="starRow">
+          <span class="star" onclick="setRating(1)">★</span>
+          <span class="star" onclick="setRating(2)">★</span>
+          <span class="star" onclick="setRating(3)">★</span>
+          <span class="star" onclick="setRating(4)">★</span>
+          <span class="star" onclick="setRating(5)">★</span>
+        </div>
+      </div>
+      <div class="form-row" style="margin-bottom:0">
+        <label>品飲筆記</label>
+        <textarea id="f-note" placeholder="寫下你的感受、層次、餘韻…"></textarea>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-card-title">照片</div>
+      <div class="photo-upload" id="photoUploadArea">
+        <input type="file" accept="image/*" multiple onchange="handlePhotos(this)">
+        <div style="font-size:24px; margin-bottom:4px">📷</div>
+        <div style="font-size:13px; color:var(--gray-400)">點擊或拖曳上傳照片</div>
+      </div>
+      <div class="photo-preview" id="photoPreview"></div>
+    </div>
+
+    <button class="btn-submit" onclick="saveRecord()" id="saveBtn">儲存紀錄</button>
+  </div>
+
+  <!-- LIST SECTION -->
+  <div class="section" id="section-list">
+    <div class="filter-bar" id="filterBar">
+      <div class="filter-chip active" onclick="filterRecords('all', this)">全部</div>
+      <div class="filter-chip" onclick="filterRecords('手沖咖啡', this)">手沖咖啡</div>
+      <div class="filter-chip" onclick="filterRecords('義式咖啡', this)">義式咖啡</div>
+      <div class="filter-chip" onclick="filterRecords('葡萄酒', this)">葡萄酒</div>
+      <div class="filter-chip" onclick="filterRecords('威士忌', this)">威士忌</div>
+      <div class="filter-chip" onclick="filterRecords('烈酒', this)">烈酒</div>
+      <div class="filter-chip" onclick="filterRecords('調酒', this)">調酒</div>
+    </div>
+    <div id="recordList"></div>
+  </div>
+
+  <!-- SETTINGS SECTION -->
+  <div class="section" id="section-settings">
+    <div class="settings-card">
+      <div class="settings-title">Google Sheets 同步</div>
+      <div class="settings-desc">
+        每次新增紀錄後，自動送一筆資料到你的 Google Sheet。<br>
+        設定一次，之後無縫同步。
+      </div>
+      <div class="form-row">
+        <label>Apps Script Web App URL</label>
+        <input type="text" id="sheetsUrl" placeholder="https://script.google.com/macros/s/..." oninput="saveSheetsUrl()">
+      </div>
+      <div style="display:flex; gap:8px; margin-top:0.5rem">
+        <button class="btn-secondary" onclick="testSync()">測試連線</button>
+        <button class="btn-secondary" onclick="exportCSV()">匯出 CSV</button>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-title">如何設定 Google Apps Script</div>
+      <div class="settings-desc">按照以下步驟，5 分鐘完成設定：</div>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">開啟 <a href="https://sheets.google.com" target="_blank" style="color:var(--amber-600)">Google Sheets</a>，新建一個試算表，命名「品味日誌」</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">點選上方選單：<code>擴充功能</code> → <code>Apps Script</code></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">刪掉原有的程式碼，貼上下方的 Script，儲存（Ctrl+S）</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">點選右上角「部署」→「新增部署作業」→ 類型選「網頁應用程式」→ 存取權設「任何人」→「部署」</div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-text">複製產生的 Web App URL，貼到上面的欄位</div>
+      </div>
+      <button class="btn-secondary" onclick="copyScript()" style="margin-top:0.5rem; width:100%">複製 Apps Script 程式碼</button>
+      <div id="copyConfirm" style="font-size:12px; color:var(--teal-600); margin-top:6px; display:none">✓ 已複製！</div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-title">資料統計</div>
+      <div id="statsGrid" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:0.5rem"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <span class="modal-close" onclick="closeModalDirect()">✕</span>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'tasting_journal_v1';
+const SHEETS_KEY = 'tasting_journal_sheets_url';
+
+let records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+let currentType = '手沖咖啡';
+let currentRating = 0;
+let photoDataUrls = [];
+
+const FLAVOR_MAP = {
+  '手沖咖啡': ['花香','柑橘','莓果','桃子','蜂蜜','焦糖','堅果','巧克力','茶感','酸質明亮','醇厚','清爽'],
+  '義式咖啡': ['奶油','榛果','可可','焦糖','苦甜','煙燻','果香','醇厚','順滑'],
+  '葡萄酒': ['黑醋栗','覆盆子','車厘子','桃子','蘋果','礦物感','橡木','皮革','胡椒','花香','奶油','煙燻'],
+  '威士忌': ['蜂蜜','香草','太妃糖','果乾','煙燻','泥煤','橡木','香料','花果','清新'],
+  '烈酒': ['清冽','草本','花香','柑橘','辛辣','甜美','穀物','清甜'],
+  '調酒': ['酸甜','清爽','草本','花香','煙燻','奶油','熱帶水果','苦味'],
+};
+
+const BADGE_CLASS = {
+  '手沖咖啡': 'badge-coffee', '義式咖啡': 'badge-coffee',
+  '葡萄酒': 'badge-wine', '威士忌': 'badge-whisky',
+  '烈酒': 'badge-whisky', '調酒': 'badge-cocktail'
+};
+
+function init() {
+  document.getElementById('f-date').valueAsDate = new Date();
+  const url = localStorage.getItem(SHEETS_KEY);
+  if (url) document.getElementById('sheetsUrl').value = url;
+  renderFlavors();
+  renderRecords();
+  renderStats();
+}
+
+function switchSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'list') renderRecords();
+  if (name === 'settings') renderStats();
+}
+
+function selectType(el, type) {
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  currentType = type;
+  renderFlavors();
+}
+
+function renderFlavors() {
+  const container = document.getElementById('flavor-tags');
+  const flavors = FLAVOR_MAP[currentType] || [];
+  container.innerHTML = flavors.map(f =>
+    `<div class="flavor-tag" onclick="toggleFlavor(this)">${f}</div>`
+  ).join('');
+}
+
+function toggleFlavor(el) { el.classList.toggle('selected'); }
+
+function setRating(n) {
+  currentRating = n;
+  document.querySelectorAll('.star').forEach((s, i) => {
+    s.classList.toggle('filled', i < n);
+  });
+}
+
+function handlePhotos(input) {
+  Array.from(input.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      photoDataUrls.push(e.target.result);
+      const preview = document.getElementById('photoPreview');
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.className = 'photo-thumb';
+      preview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function saveRecord() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { showToast('請填寫名稱'); return; }
+
+  const selectedFlavors = Array.from(document.querySelectorAll('.flavor-tag.selected')).map(t => t.textContent);
+  const customFlavors = document.getElementById('f-flavor-custom').value.trim();
+  const allFlavors = [...selectedFlavors];
+  if (customFlavors) allFlavors.push(...customFlavors.split(/[,，、\s]+/).filter(Boolean));
+
+  const record = {
+    id: Date.now(),
+    type: currentType,
+    name,
+    variety: document.getElementById('f-variety').value.trim(),
+    date: document.getElementById('f-date').value,
+    location: document.getElementById('f-location').value.trim(),
+    occasion: document.getElementById('f-occasion').value,
+    flavors: allFlavors,
+    rating: currentRating,
+    note: document.getElementById('f-note').value.trim(),
+    photos: photoDataUrls.slice(),
+    createdAt: new Date().toISOString()
+  };
+
+  records.unshift(record);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  syncToSheets(record);
+  showToast('✓ 紀錄已儲存');
+  resetForm();
+}
+
+function resetForm() {
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-variety').value = '';
+  document.getElementById('f-date').valueAsDate = new Date();
+  document.getElementById('f-location').value = '';
+  document.getElementById('f-occasion').value = '';
+  document.getElementById('f-flavor-custom').value = '';
+  document.getElementById('f-note').value = '';
+  document.querySelectorAll('.flavor-tag').forEach(t => t.classList.remove('selected'));
+  currentRating = 0;
+  document.querySelectorAll('.star').forEach(s => s.classList.remove('filled'));
+  photoDataUrls = [];
+  document.getElementById('photoPreview').innerHTML = '';
+}
+
+let activeFilter = 'all';
+function filterRecords(type, el) {
+  activeFilter = type;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderRecords();
+}
+
+function renderRecords() {
+  const container = document.getElementById('recordList');
+  const filtered = activeFilter === 'all' ? records : records.filter(r => r.type === activeFilter);
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🍃</div><div class="empty-text">還沒有紀錄，去新增第一筆吧</div></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(r => `
+    <div class="record-card" onclick="showDetail(${r.id})">
+      <div class="record-header">
+        <div class="record-name">${r.name}</div>
+        <div class="record-type-badge ${BADGE_CLASS[r.type] || 'badge-coffee'}">${r.type}</div>
+      </div>
+      <div class="record-meta">${r.date || ''}${r.location ? ' · ' + r.location : ''}${r.occasion ? ' · ' + r.occasion : ''}</div>
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <div class="record-tags">${r.flavors.slice(0,4).map(f => `<span class="record-tag">${f}</span>`).join('')}${r.flavors.length > 4 ? `<span class="record-tag">+${r.flavors.length-4}</span>` : ''}</div>
+        ${r.rating ? `<div class="record-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function showDetail(id) {
+  const r = records.find(x => x.id === id);
+  if (!r) return;
+  const modal = document.getElementById('modalContent');
+  modal.innerHTML = `
+    ${r.photos && r.photos.length ? `<img class="modal-photo" src="${r.photos[0]}">` : ''}
+    <div class="record-type-badge ${BADGE_CLASS[r.type] || 'badge-coffee'}" style="display:inline-block; margin-bottom:8px">${r.type}</div>
+    <div class="modal-title">${r.name}</div>
+    ${r.rating ? `<div style="font-size:20px; color:var(--amber-200); margin-bottom:1rem">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>` : ''}
+    <div class="detail-row"><span class="detail-label">品種 / 產區</span><span class="detail-value">${r.variety || '—'}</span></div>
+    <div class="detail-row"><span class="detail-label">日期</span><span class="detail-value">${r.date || '—'}</span></div>
+    <div class="detail-row"><span class="detail-label">地點</span><span class="detail-value">${r.location || '—'}</span></div>
+    <div class="detail-row"><span class="detail-label">場合</span><span class="detail-value">${r.occasion || '—'}</span></div>
+    <div class="detail-row"><span class="detail-label">風味</span><span class="detail-value">${r.flavors.join('、') || '—'}</span></div>
+    ${r.note ? `<div class="modal-note">"${r.note}"</div>` : ''}
+    ${r.photos && r.photos.length > 1 ? `<div class="photo-preview" style="margin-top:1rem">${r.photos.map(p => `<img class="photo-thumb" src="${p}">`).join('')}</div>` : ''}
+    <button class="btn-secondary" onclick="deleteRecord(${r.id})" style="margin-top:1.25rem; color:var(--coral-600); border-color:var(--coral-200); width:100%">刪除這筆紀錄</button>
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function deleteRecord(id) {
+  if (!confirm('確定要刪除這筆紀錄嗎？')) return;
+  records = records.filter(r => r.id !== id);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  closeModalDirect();
+  renderRecords();
+  showToast('已刪除');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function saveSheetsUrl() {
+  const url = document.getElementById('sheetsUrl').value.trim();
+  localStorage.setItem(SHEETS_KEY, url);
+}
+
+async function syncToSheets(record) {
+  const url = localStorage.getItem(SHEETS_KEY);
+  if (!url) return;
+  setSyncStatus('同步中…', false);
+  try {
+    const payload = {
+      type: record.type,
+      name: record.name,
+      variety: record.variety,
+      date: record.date,
+      location: record.location,
+      occasion: record.occasion,
+      flavors: record.flavors.join('、'),
+      rating: record.rating,
+      note: record.note,
+      hasPhoto: record.photos.length > 0 ? '是' : '否',
+      createdAt: record.createdAt
+    };
+    await fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    setSyncStatus('已同步', false);
+  } catch(e) {
+    setSyncStatus('同步失敗', true);
+  }
+}
+
+async function testSync() {
+  const url = document.getElementById('sheetsUrl').value.trim();
+  if (!url) { showToast('請先填入 URL'); return; }
+  setSyncStatus('測試中…', false);
+  try {
+    await fetch(url, { method: 'GET', mode: 'no-cors' });
+    setSyncStatus('連線正常', false);
+    showToast('✓ 連線成功！');
+  } catch(e) {
+    setSyncStatus('連線失敗', true);
+    showToast('連線失敗，請確認 URL');
+  }
+}
+
+function setSyncStatus(text, isError) {
+  document.getElementById('syncText').textContent = text;
+  document.getElementById('syncDot').className = 'sync-dot' + (isError ? ' error' : '');
+}
+
+function exportCSV() {
+  const headers = ['類型','名稱','品種產區','日期','地點','場合','風味','評分','筆記','有照片','建立時間'];
+  const rows = records.map(r => [
+    r.type, r.name, r.variety, r.date, r.location, r.occasion,
+    r.flavors.join('、'), r.rating, r.note,
+    r.photos.length > 0 ? '是' : '否', r.createdAt
+  ].map(v => `"${String(v || '').replace(/"/g, '""')}"`));
+  const csv = '\uFEFF' + [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '品味日誌_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+function renderStats() {
+  const grid = document.getElementById('statsGrid');
+  const total = records.length;
+  const avgRating = records.filter(r => r.rating).length
+    ? (records.reduce((s, r) => s + (r.rating || 0), 0) / records.filter(r => r.rating).length).toFixed(1)
+    : '—';
+  const types = [...new Set(records.map(r => r.type))].length;
+  grid.innerHTML = [
+    ['總紀錄', total],
+    ['平均評分', avgRating],
+    ['飲品種類', types]
+  ].map(([label, val]) => `
+    <div style="background:var(--gray-50); border-radius:8px; padding:0.75rem; text-align:center">
+      <div style="font-size:11px; color:var(--gray-400); margin-bottom:4px">${label}</div>
+      <div style="font-size:22px; font-weight:500; color:#2c2a24">${val}</div>
+    </div>
+  `).join('');
+}
+
+function copyScript() {
+  const script = `function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(['類型','名稱','品種/產區','日期','地點','場合','風味','評分','筆記','有照片','建立時間']);
+    }
+    sheet.appendRow([
+      data.type, data.name, data.variety, data.date,
+      data.location, data.occasion, data.flavors,
+      data.rating, data.note, data.hasPhoto, data.createdAt
+    ]);
+    return ContentService.createTextOutput(JSON.stringify({status:'ok'}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({status:'error', msg: err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({status:'ok'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+  navigator.clipboard.writeText(script).then(() => {
+    document.getElementById('copyConfirm').style.display = 'block';
+    setTimeout(() => document.getElementById('copyConfirm').style.display = 'none', 3000);
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+init();
+</script>
+</body>
+</html>
