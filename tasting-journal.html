@@ -1,42 +1,41 @@
-function doPost(e) {
-  try {
-    var data = JSON.parse(e.postData.contents);
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['類型','名稱','品種/產區','日期','地點','場合','風味','評分','筆記','有照片','建立時間']);
-    }
-    sheet.appendRow([data.type,data.name,data.variety,data.date,data.location,data.occasion,data.flavors,data.rating,data.note,data.hasPhoto,data.createdAt]);
-    return ContentService.createTextOutput(JSON.stringify({status:'ok'})).setMimeType(ContentService.MimeType.JSON);
-  } catch(err) {
-    return ContentService.createTextOutput(JSON.stringify({status:'error',msg:err.toString()})).setMimeType(ContentService.MimeType.JSON);
-  }
-}
+品味日誌
+Coffee & Spirits Journal
+已設定
+類型
+☕
+手沖咖啡
+🍵
+義式咖啡
+🍷
+葡萄酒
+🥃
+威士忌
+🍶
+烈酒
+🍸
+調酒
+基本資訊
+名稱 / 品項
+例：Ethiopia Yirgacheffe / Hibiki 21
+品種 / 產區
+例：Heirloom / 斯貝賽
+日期
 
-function doGet(e) {
-  try {
-    var action = e.parameter.action;
-    if (action === 'ping' || !action) {
-      return ContentService.createTextOutput(JSON.stringify({status:'ok'})).setMimeType(ContentService.MimeType.JSON);
-    }
-    if (action === 'get') {
-      var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-      var rows = sheet.getDataRange().getValues();
-      if (rows.length <= 1) {
-        return ContentService.createTextOutput(JSON.stringify({status:'ok',records:[]})).setMimeType(ContentService.MimeType.JSON);
-      }
-      var headers = rows[0];
-      var keyMap = {'類型':'type','名稱':'name','品種/產區':'variety','日期':'date','地點':'location','場合':'occasion','風味':'flavors','評分':'rating','筆記':'note','有照片':'hasPhoto','建立時間':'createdAt'};
-      var records = [];
-      for (var i = 1; i < rows.length; i++) {
-        var obj = {};
-        for (var j = 0; j < headers.length; j++) {
-          obj[keyMap[headers[j]]||headers[j]] = rows[i][j] !== undefined ? String(rows[i][j]) : '';
-        }
-        records.push(obj);
-      }
-      return ContentService.createTextOutput(JSON.stringify({status:'ok',records:records})).setMimeType(ContentService.MimeType.JSON);
-    }
-  } catch(err) {
-    return ContentService.createTextOutput(JSON.stringify({status:'error',msg:err.toString()})).setMimeType(ContentService.MimeType.JSON);
-  }
-}
+2026/03/23
+地點
+例：Fika Fika 信義店
+場合
+
+選擇場合
+風味
+自由輸入風味
+例：黑糖、太妃糖、柑橘
+評分與筆記
+整體評分
+品飲筆記
+寫下你的感受、層次、餘韻…
+照片
+未選擇任何檔案
+📷
+點擊上傳照片（存於本機）
+儲存紀錄
